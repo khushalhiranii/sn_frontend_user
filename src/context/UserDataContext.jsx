@@ -49,11 +49,14 @@ export const UserDataProvider = ({ children }) => {
         otp,
         phoneno: phoneNumber,
       });
-      if(response.data.accestoken){
-        setOtpVerificationStatus(true); // OTP verification successful
-        // navigate('/otpverified')
-        return response.data.accesstoken
-      };
+      console.log(response);
+      sessionStorage.setItem('accesstoken', response.data.data.accesstoken)
+      return response;
+      // if(response.data.accesstoken){
+      //   setOtpVerificationStatus(true); // OTP verification successful
+      //   // navigate('/otpverified')
+      //   return response.data.accesstoken
+      // };
       
     } catch (error) {
       console.error('Error verifying OTP:', error);

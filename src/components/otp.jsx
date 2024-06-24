@@ -1,16 +1,71 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useEffect, useRef, useState }
+	from "react";
 import { useUserData } from '../context/UserDataContext';
 import { useNavigate } from 'react-router-dom';
 
-export const Otp = ()=> {
-  const [otp, setotp] = useState('')
-  // Function to handle input and allow only numbers
-  const handleInputChange = (e) => {
-    const { value } = e.target;
-    setotp(otp + e.target.value)
-    // Restrict input to numbers only
-    e.target.value = value.replace(/\D/g, '');
-  };
+export const Otp = ({ length = 6
+    // ,
+	// onOtpSubmit = (nalotp) => { 
+    //     console.log(nalotp)
+    // } 
+}) => {
+        const [finalOtp, setFinalOtp] = useState('')
+	const [otp, setOtp] = useState(
+		new Array(length).fill(""));
+	const inputRefs = useRef([]);
+
+	useEffect(() => {
+		if (inputRefs.current[0]) {
+			inputRefs.current[0].focus();
+		}
+	}, []);
+
+	const handleChange = (index, e) => {
+		const value = e.target.value;
+		if (isNaN(value)) return;
+
+		const newOtp = [...otp];
+		// allow only one input
+		newOtp[index] =
+			value.substring(value.length - 1);
+		setOtp(newOtp);
+
+		// submit trigger
+		const combinedOtp = newOtp.join("");
+		if (combinedOtp.length === length){
+			// onOtpSubmit(combinedOtp);
+            setFinalOtp(combinedOtp);
+        }
+
+		// Move to next input if current field is filled
+		if (value && index < length - 1 &&
+			inputRefs.current[index + 1]) {
+			inputRefs.current[index + 1].focus();
+		}
+	};
+
+	const handleClick = (index) => {
+		inputRefs.current[index].setSelectionRange(1, 1);
+
+		// optional
+		if (index > 0 && !otp[index - 1]) {
+			inputRefs.current[otp.indexOf("")].focus();
+		}
+	};
+
+	const handleKeyDown = (index, e) => {
+		if (
+			e.key === "Backspace" &&
+			!otp[index] &&
+			index > 0 &&
+			inputRefs.current[index - 1]
+		) {
+			// Move focus to the previous input field on backspace
+			inputRefs.current[index - 1].focus();
+		}
+	};
+
 
   const { sendOTP } = useUserData()
   const navigate = useNavigate()
@@ -19,8 +74,8 @@ export const Otp = ()=> {
     e.preventDefault();
     try {
       // Call sendUserData function from context
-      console.log(otp)
-      const response = await sendOTP(otp);
+      console.log(finalOtp)
+      const response = await sendOTP(finalOtp);
       console.log(response)
       if(response){
         navigate('/otpverified')
@@ -48,16 +103,20 @@ export const Otp = ()=> {
         </div>
         <div className="mt-6">
           <div className="flex justify-center gap-4">
-            {[...Array(6)].map((_, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength="1"
-                className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:border-black"
-                onInput={handleInputChange}
-                
-              />
-            ))}
+          {otp.map((value, index) => {
+				return (
+					<input
+						key={index}
+						type="text"
+						ref={(input) => (inputRefs.current[index] = input)}
+						value={value}
+						onChange={(e) => handleChange(index, e)}
+						onClick={() => handleClick(index)}
+						onKeyDown={(e) => handleKeyDown(index, e)}
+						className="w-9 h-10 text-2xl text-center border-2 border-gray-300 rounded-md"
+					/>
+				);
+			})}
           </div>
           <div className="text-center mt-4">
             <p>Didn’t you receive the OTP?</p>

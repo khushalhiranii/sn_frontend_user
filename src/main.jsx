@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Routes>
       <Route path='/' element={<App/>}>
         <Route index element={<Inputbar/>}/>
-        <Route path='/otp' element={<PrivateRoute component={Otp} />}/>
+        <Route path='/otp' element={<Otp/>}/>
         <Route path='/otpverified' element={<PrivateRoute component={OtpVerified}/>}/>
       </Route>
     </Routes>
