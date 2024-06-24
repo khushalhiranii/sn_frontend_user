@@ -14,13 +14,14 @@ export const useUserData = () => {
 // Context Provider component
 export const UserDataProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
+  const [ phoneNumber, setPhoneNumber] = useState(null)
   const [verificationStatus, setVerificationStatus] = useState(false);
   const [otpVerificationStatus, setOtpVerificationStatus] = useState(false);
   // const navigate = useNavigate();
   // Function to send user data and handle response
   const sendUserData = async (fullname, email, dob, phoneno) => {
     try {
-      const response = await axios.post('https://sn-backend.vercel.app/api/v1/user/login',{
+      const response = await axios.post('https://sn-backend.vercel.app/api/v1/user/register',{
         
         fullname,
         email,
@@ -29,11 +30,11 @@ export const UserDataProvider = ({ children }) => {
         
       });
       // Assuming the response includes a phone number for verification
-      const { phoneNumber } = response.data;
+      setPhoneNumber(response.data.data);
       // Set userData and verificationStatus based on API response
       setUserData({ fullname, email, dob, phoneno });
       setVerificationStatus(true); // Proceed to OTP verification
-      return phoneNumber;
+      
     } catch (error) {
       console.error('Error sending user data:', error);
       // Handle error (e.g., show error message)
@@ -42,16 +43,16 @@ export const UserDataProvider = ({ children }) => {
   };
 
   // Function to send OTP and handle verification
-  const sendOTP = async (otp, phoneNumber) => {
+  const sendOTP = async (otp) => {
     try {
       const response = await axios.post('https://sn-backend.vercel.app/api/v1/user/verifyotp', {
         otp,
         phoneno: phoneNumber,
       });
-      if(response.accesToken){
+      if(response.data.accestoken){
         setOtpVerificationStatus(true); // OTP verification successful
         // navigate('/otpverified')
-        return response.accessToken
+        return response.data.accesstoken
       };
       
     } catch (error) {

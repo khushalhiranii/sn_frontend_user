@@ -15,7 +15,7 @@ export const Inputbar = ()=> {
     try {
       // Call sendUserData function from context
       const phoneNumber = await sendUserData(name, email, dob, phone);
-      console.log('Received phone number:', phoneNumber);
+      // console.log('Received phone number:', phoneNumber);
       navigate('/otp')
       // Proceed to OTP verification step
       // Implement your logic here (e.g., navigate to OTP verification screen)

@@ -21,7 +21,8 @@ export const Otp = ()=> {
       // Call sendUserData function from context
       console.log(otp)
       const response = await sendOTP(otp);
-      if(response.accessToken){
+      console.log(response)
+      if(response){
         navigate('/otpverified')
       }
       
